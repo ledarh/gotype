@@ -18,6 +18,7 @@ type AppModel struct {
 	StatusBar	StatusBarModel
 	Menu		MenuModel
 	Game 		GameModel
+	Help        HelpModel
 	CurrentView	string
 	config 		conf.Config
 	timer 		timer.Model
@@ -33,6 +34,7 @@ func NewAppModel() AppModel {
 		StatusBar: NewStatusBarModel( c ),
 		Menu: NewMenuModel( c ),
 		Game: NewGameModel( c ),
+		Help: NewHelpModel( c ),
 	}
 }
 
@@ -107,6 +109,10 @@ func ( m AppModel ) Update( msg tea.Msg ) ( tea.Model, tea.Cmd ) {
 			newGame, gameCmd := m.Game.Update( msg )
 			m.Game = newGame.( GameModel )
 			cmd = gameCmd
+		case "Help":
+			newHelp, helpCmd := m.Help.Update( msg )
+			m.Help = newHelp.( HelpModel )
+			cmd = helpCmd
 						
 	}
 
@@ -124,8 +130,8 @@ func ( m AppModel ) View() string {
 	switch( m.CurrentView ) {
 		case "MENU":
 			mainView = lipgloss.JoinVertical( 0, mainWin.Render( m.Menu.View() ), m.StatusBar.View() )
-		case "HELP":
-			mainView = lipgloss.JoinVertical( 0, mainWin.Render(  ), m.StatusBar.View() )
+		case "Help":
+			mainView = lipgloss.JoinVertical(0, mainWin.Render(m.Help.View()), m.StatusBar.View())
 		case "Game":
 			mainView = lipgloss.JoinVertical( 0, mainWin.Render(), m.Game.View(), m.StatusBar.View() )
 	}
@@ -142,10 +148,7 @@ func ( m AppModel ) handleResize( height, width int ) AppModel {
 	m.StatusBar = m.StatusBar.handleResize( height, width )
 	m.Menu = m.Menu.handleResize( height, width )
 	m.Game = m.Game.handleResize( height, width )
+	m.Help = m.Help.handleResize( height, width )
 	
 	return m
 }
-
-
-
-
