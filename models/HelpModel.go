@@ -8,6 +8,10 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+type KeyMap struct {
+	ExitKeys []string
+}
+
 type HelpModel struct {
 	width  int
 	height int
@@ -25,20 +29,51 @@ func NewHelpModel( c conf.Config ) HelpModel {
 }
 
 func ( m HelpModel ) Update( msg tea.Msg ) ( tea.Model, tea.Cmd ) {
+	var cmd tea.Cmd
+
+	keys := KeyMap{
+		ExitKeys: []string{"q", "esc", "backspace"},
+
+	}
+
+	// Check for key presses
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		for _, key := range keys.ExitKeys {
+			if msg.String() == key {
+				cmd = ChangeView("MENU")
+				return m, cmd
+			}
+		}
+	}
+
+	// If no key matches, return the model as is
 	return m, nil
 }
 
 func ( m HelpModel ) View() string {
 
-	content := "This is the Help page.\n\nPress 'q' to quit or 'esc' to return to the menu."
-	
+	helpTitleText := lipgloss.NewStyle().
+        Foreground( m.config.Colors.Color7 ).
+        Width(m.width).
+        Align(lipgloss.Center).
+        MarginTop(1).
+		Render("This is the Help page.\n\nPress 'q' to quit or 'esc' to return to the menu.")
 
 	helpContent := lipgloss.NewStyle().
 		Height(m.height - 1).
 		Width(m.width - 2).
-		Render(content)
+		Render(helpTitleText)
 
-	return helpContent
+
+    content := lipgloss.JoinVertical(
+        lipgloss.Center,
+        //title,
+        "\n",
+        helpContent,
+	)
+
+	return content
 }
 
 func ( m HelpModel ) handleResize( height, width int ) HelpModel {
@@ -46,3 +81,7 @@ func ( m HelpModel ) handleResize( height, width int ) HelpModel {
 	m.width = width
 	return m
 }
+
+
+
+//Render("↑/k: up • ↓/j: down • enter: select • q: quit")
