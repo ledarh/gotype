@@ -58,7 +58,17 @@ func ( m HelpModel ) View() string {
         Width(m.width).
         Align(lipgloss.Center).
         MarginTop(1).
-		Render("This is the Help page.\n\nPress 'q' to quit or 'esc' to return to the menu.")
+		Render(`
+╔╗      ╔╗     
+║║      ║║     
+║╚═╗╔══╗║║ ╔══╗
+║╔╗║║╔╗║║║ ║╔╗║
+║║║║║║═╣║╚╗║╚╝║
+╚╝╚╝╚══╝╚═╝║╔═╝
+           ║║  
+           ╚╝ 
+`)
+		//Render(`Press 'q' or 'esc' to return to the menu.`)
 
 	helpContent := lipgloss.NewStyle().
 		Height(m.height - 1).
@@ -85,3 +95,31 @@ func ( m HelpModel ) handleResize( height, width int ) HelpModel {
 
 
 //Render("↑/k: up • ↓/j: down • enter: select • q: quit")
+
+
+
+
+/* Alternative title texts */
+/*
+
+    titleText := ` 
+░█▄█▒██▀░█▒░▒█▀▄
+▒█▒█░█▄▄▒█▄▄░█▀▒
+`
+
+    titleText := `
+╔╗      ╔╗     
+║║      ║║     
+║╚═╗╔══╗║║ ╔══╗
+║╔╗║║╔╗║║║ ║╔╗║
+║║║║║║═╣║╚╗║╚╝║
+╚╝╚╝╚══╝╚═╝║╔═╝
+           ║║  
+           ╚╝ 
+`
+
+    titleText := `
+ＨＥＬＰ
+`
+
+*/
