@@ -54,7 +54,7 @@ func ( m HelpModel ) Update( msg tea.Msg ) ( tea.Model, tea.Cmd ) {
 
 
 
-func createVimTextKeyMap() map[string]string {
+func createTextKeyMap() map[string]string {
 	// Create a new keymap with Vim-like keybindings and their descriptions
 	kmap := map[string]string{
 		"Up":        "Move up (k, up)",
@@ -156,26 +156,21 @@ func ( m HelpModel ) View() string {
 		Render(exitText)
 
 
-
-	
-	//keyStyle  := m.GetKeyStyle()
-	//keyText   := m.GetKeyText()
 	featStyle := m.GetFeatStyle()
 	featText  := m.GetFeatText()
 
 
-	kmap := createVimTextKeyMap()
+	kmap := createTextKeyMap()
 
 	columns := m.GetKeyText(kmap)
 	keyStyle := lipgloss.NewStyle().Align(lipgloss.Center).Width(40)
 	keyObj  := lipgloss.JoinHorizontal(
 		lipgloss.Center,
-		keyStyle.Render(columns[0]), // key
-		keyStyle.Render(columns[1]), // action
+		keyStyle.Render(columns[0]),
+		keyStyle.Render(columns[1]),
 	)
 
 
-	//keyObj  := keyStyle.Render(keyText)
 	featObj := featStyle.Render(featText)
 
 	
