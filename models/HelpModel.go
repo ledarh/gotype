@@ -277,7 +277,7 @@ func ( m HelpModel ) GetKeyText() string {
 // }
 
 
-// func createVimKeymap() map[string]key.Binding {
+// func createKeymap() map[string]key.Binding {
 
 // 	kmap := make(map[string]key.Binding)
 
