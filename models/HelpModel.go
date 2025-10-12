@@ -5,6 +5,7 @@ package models
 import (
 	"gotype/conf"
 	"fmt"
+	"strings"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	//"github.com/charmbracelet/bubbles/keymap"
@@ -57,17 +58,16 @@ func ( m HelpModel ) Update( msg tea.Msg ) ( tea.Model, tea.Cmd ) {
 func createTextKeyMap() map[string]string {
 	// Create a new keymap with Vim-like keybindings and their descriptions
 	kmap := map[string]string{
-		"Up":        "Move up (k, up)",
-		"Down":      "Move down (j, down)",
-		"Left":      "Move left (h, left)",
-		"Right":     "Move right (l, right)",
-		// "NextWord":  "Move to next word (w)",
-		// "PrevWord":  "Move to previous word (b)",
-		// "Insert":    "Enter insert mode (i)",
-		// "GoTop":     "Go to top (gg)",
-		// "GoBottom":  "Go to bottom (G)",
-		// "Retry":     "Retry (r)",
-		// "Pause":     "Pause (p)",
+		"k/↑:":        "up",
+		"j/↓:":        "down",
+		"h/←:":        "left",
+		"l/→:":        "right",
+		"w:":  		   "next word",
+		"b:":  		   "prev word",
+		"gg:":         "go top",
+		"G:":  		   "go bottom",
+		"r:":     	   "retry",
+		"p:":     	   "pause",
 	}
 
 	return kmap
@@ -77,8 +77,8 @@ func (m HelpModel) GetKeyText(kmap map[string]string) []string {
 	leftColumn := ""
 	rightColumn := ""
 	for action, description := range kmap {
-		leftColumn += fmt.Sprintf("%-12s\n", action)
-		rightColumn += fmt.Sprintf("%-30s\n", description)
+		leftColumn += fmt.Sprintf("%-6s\n", action)
+		rightColumn += fmt.Sprintf("%-12s\n", description)
 	}
 
 	// Return both columns as a slice of strings
@@ -105,16 +105,18 @@ func ( m HelpModel ) GetFeatStyle() lipgloss.Style {
         Foreground( m.config.Colors.Color7 ).
         Width(m.width).
         Align(lipgloss.Left).
-        MarginLeft(1)
+        MarginLeft(1).
+		PaddingTop(0)
 	
 	return featStyle
 }
 
 func ( m HelpModel ) GetFeatText() string {
 	featText := `
-	* Game: efe
-	* Levels: fflevels
-	
+	• Menu: Navigate the game's primary options such as starting a new game, loading a saved game
+	• Game: Practice typing code-like text inside the terminal
+	• Levels: Select specific level to launch game at
+	• Settings: Adjust keybindings and other customizations
 	`
 	
 	return featText
@@ -129,7 +131,8 @@ func ( m HelpModel ) View() string {
         Foreground( m.config.Colors.Color7 ).
         Width(m.width).
         Align(lipgloss.Center).
-	MarginTop(1).
+		//MarginTop(1).
+		//PaddingBottom(2).
 		Render(
 `╔╗      ╔╗     
 ║║      ║║     
@@ -141,8 +144,11 @@ func ( m HelpModel ) View() string {
         ╚╝`)
 
 	helpTitleObj := lipgloss.NewStyle().
-		Height(m.height-19).
-		Width(m.width - 2).
+		//Height(m.height-19).
+		Height(3).
+		MarginBottom(4).
+		//PaddingBottom(2).
+		Width(m.width).
 		Render(helpTitleText)
 
 
@@ -150,11 +156,13 @@ func ( m HelpModel ) View() string {
         Foreground( m.config.Colors.Color7 ).
         Width(m.width).
         Align(lipgloss.Center).
-        MarginTop(m.height-20).
+        MarginTop(m.height-26).
+		Bold(true).
 		Render("Press q, esc, backspace to return to menu")
 
 	exitTextObj := lipgloss.NewStyle().
-		Bold(true).
+		//Bold(false).
+		Align(lipgloss.Bottom).
 		Render(exitText)
 
 
@@ -165,13 +173,28 @@ func ( m HelpModel ) View() string {
 	kmap := createTextKeyMap()
 
 	columns := m.GetKeyText(kmap)
-	keyStyle := lipgloss.NewStyle().Align(lipgloss.Center).Width(40)
-	keyObj  := lipgloss.JoinHorizontal(
+
+	
+
+	keyStyle := lipgloss.NewStyle().Align(lipgloss.Center).Width(20)
+
+	keyObj1 := lipgloss.JoinHorizontal(
 		lipgloss.Center,
-		keyStyle.Render(columns[0]),
-		keyStyle.Render(columns[1]),
+		keyStyle.Render(strings.Join(strings.Split(columns[0], "\n")[:4], "\n")),  // Split by "\n" and take first 4 lines
+		keyStyle.Render(strings.Join(strings.Split(columns[1], "\n")[:4], "\n")),  // Same for second column
 	)
 
+	keyObj2 := lipgloss.JoinHorizontal(
+		lipgloss.Center,
+		keyStyle.Render(strings.Join(strings.Split(columns[0], "\n")[4:8], "\n")),  // Split by "\n" and take first 4 lines
+		keyStyle.Render(strings.Join(strings.Split(columns[1], "\n")[4:8], "\n")),  // Same for second column
+	)
+
+	keyObjCombined := lipgloss.JoinHorizontal(
+		lipgloss.Bottom,
+		keyObj1,
+		keyObj2,
+	)
 
 	featObj := featStyle.Render(featText)
 
@@ -180,7 +203,8 @@ func ( m HelpModel ) View() string {
     content := lipgloss.JoinVertical(
         lipgloss.Center,
         helpTitleObj,
-		keyObj,
+		//keyObj,
+		keyObjCombined,
 		featObj,
 		exitTextObj,
 	)
