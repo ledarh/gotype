@@ -123,11 +123,13 @@ func ( m HelpModel ) GetFeatText() string {
 
 func ( m HelpModel ) View() string {
 
+
+	// Windows
 	helpTitleText := lipgloss.NewStyle().
         Foreground( m.config.Colors.Color7 ).
         Width(m.width).
         Align(lipgloss.Center).
-        MarginTop(3).
+	MarginTop(1).
 		Render(
 `╔╗      ╔╗     
 ║║      ║║     
